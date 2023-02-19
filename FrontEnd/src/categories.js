@@ -1,11 +1,15 @@
 
 export async function getCategories(){
-    let categories; 
-    try {
-        const response = await fetch("http://localhost:5678/api/categories");
-        categories = await response.json();  
-    } catch (error) {
-        console.log(error); 
+    let categories = await JSON.parse(window.localStorage.getItem("categories")); 
+    
+    if(categories === null){
+        try {
+            const response = await fetch("http://localhost:5678/api/categories");
+            categories = await response.json();
+            window.localStorage.setItem("categories", JSON.stringify(categories));   
+        } catch (error) {
+            console.log(error); 
+        }
     }
     
     return categories;  

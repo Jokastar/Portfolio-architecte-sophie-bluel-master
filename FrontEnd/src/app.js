@@ -1,4 +1,4 @@
-import { getWorks,createImagesHtml, works } from "./works.js";
+import { getWorks,createWorksHtml, works } from "./works.js";
 import {categories, filterElement} from "./categories.js";
 //get all the works from the API
 await works(); 
@@ -15,7 +15,7 @@ await categories();
         const filteredList = await filterElement(id);
 
         gallery.innerHTML = "";
-        createImagesHtml(filteredList);  
+        createWorksHtml(filteredList);  
     })
  }
 
@@ -27,7 +27,7 @@ await categories();
     const data = window.localStorage.getItem("works");
     const works = await JSON.parse(data); 
     gallery.innerHTML = "";  
-    createImagesHtml(works); 
+    createWorksHtml(works); 
  })
 
  
