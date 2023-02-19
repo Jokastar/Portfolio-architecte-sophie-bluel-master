@@ -1,5 +1,8 @@
 import { getWorks,createWorksHtml, works } from "./works.js";
 import {categories, filterElement} from "./categories.js";
+import{CheckUserLoggedIn} from './login.js'; 
+//check if the user is Logged In
+CheckUserLoggedIn(); 
 //get all the works from the API
 await works(); 
 
@@ -20,7 +23,6 @@ await categories();
  }
 
  //adding eventListner to the all works filters
-
  const allFilter = document.querySelector(".filter-all"); 
  allFilter.addEventListener('click', async ()=>{
     const gallery = document.querySelector(".gallery"); 

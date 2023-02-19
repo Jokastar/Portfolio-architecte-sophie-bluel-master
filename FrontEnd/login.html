@@ -9,16 +9,16 @@
         <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Work+Sans&display=swap" rel="stylesheet">
         <meta name="description" content="">
         <link rel="stylesheet" href="./assets/style.css">
-        <link rel="stylesheet" href="./assets//connexion.css">
+        <link rel="stylesheet" href="./assets//login.css">
     </head>
 <body>
     <header>
-        <a href="./index.html"><h1>Sophie Bluel <span>Architecte d'inteérieur</span></h1></a>
+        <a href="./index.html"><h1>Sophie Bluel <span>Architecte d'intérieur</span></h1></a>
         <nav>
             <ul>
                 <li><a href="./index.html#project">projets</a></li>
                 <li><a href="./index.html#contact">contact</a></li>
-                <li> <a href="./connexion.html">login</a></li>
+                <li> <a href="./login.html" class=".login">login</a></li>
                 <li><img src="./assets/icons/instagram.png" alt="Instagram"></li>
             </ul>
         </nav>
@@ -29,21 +29,23 @@
             <form action="#">
                 <div class="input">
                     <label for="email">E-mail</label>
-                    <input type="text" id="email" name="email">
+                    <input type="email" id="email" name="email" required>
                 </div>
                 <div class="input">
                     <label for="password">Mot de passe</label>
-                    <input type="text" id="password" name="password">
+                    <input type="password" id="password" name="password" required>
+                    <p class="err-msg"></p>
                 </div>
-                <button type="submit">Se Connecter</button>
+                <input type="submit" value="Se connecter"></input>
             </form>
+            
             <p><a href="#">Mot de passe oublié</a></p>
         </div>
     </main>
 
     <footer>
-        <p>Mentions Légales</p>
+        <p> <a href="#">Mentions Légales</a></p>
     </footer>
-    
+    <script src="./src/login.js" type="module" defer></script>
 </body>
 </html>

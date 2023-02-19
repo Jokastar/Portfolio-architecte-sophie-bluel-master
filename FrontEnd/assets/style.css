@@ -52,6 +52,7 @@ body {
 	margin:auto;
 	font-family: 'Work Sans' ;
 	font-size: 14px;
+	background-color: #fffef8;
 }
 header {
 	display: flex;
@@ -111,6 +112,10 @@ li:hover {
 	color: #B1663C;
 	cursor: pointer;
 }
+nav img{
+	width: 60%;
+	aspect-ratio: 1/1;
+}
 
 
 #introduction {
@@ -147,18 +152,18 @@ li:hover {
 }
 .categories p{
 	padding: 7px 15px;
-	border: 2px solid #0e2f28;
+	border: 2px solid #1D6154;
 	border-radius: 45px;
 	margin-right: 1%;
 	margin-bottom: 20px;
-	color: #0e2f28;
+	color: #1D6154;
 	font-weight: 600;
 	font-family: 'Syne';
 }
 .categories p:hover{
 	cursor: pointer;
 	color: white;
-	background-color: #0e2f28;
+	background-color: #1D6154;
 }
 .gallery {
 	width: 100%;
@@ -213,6 +218,10 @@ input[type="submit"]{
 	width: 180px;
 	text-align: center;
 	border-radius: 60px ;
+	border: none;
+}
+input[type="submit"]:hover{
+	cursor: pointer;
 }
 
 footer nav ul {

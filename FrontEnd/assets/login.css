@@ -1,0 +1,55 @@
+html, body{
+    height:100%; 
+}
+main{
+    height: 80%;
+}
+
+.login-form{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+.login-form h1{
+    color: #1D6154; 
+}
+
+form{
+    display: flex;
+    flex-direction: column;
+    width: 300px;
+}
+
+.input{
+    display: flex;
+    flex-direction: column;
+    border: none;
+    margin: 6% 0%;
+     
+}
+label{
+    margin-bottom: 5px;
+}
+
+input{
+    height: 3em;
+    border: 1px solid white;
+    border-radius: 3px;
+    box-shadow: 2px 2px 5px #c4bfbf;
+}
+
+input:focus{
+    background-color: white;
+       
+}
+
+.err-msg{
+    display: none;
+    color: red;
+}
+
+footer{
+    display: flex;
+    justify-content: flex-end;
+}
