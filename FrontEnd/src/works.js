@@ -1,20 +1,17 @@
-export async function getWorks(){
-    let works = await JSON.parse(window.localStorage.getItem("works")); 
-    
-    if(works === null){
+ 
+export async function fetchWorks(){
+    let works; 
         try {
             const response = await fetch("http://localhost:5678/api/works"); 
             works = await response.json();
-            window.localStorage.setItem("works", JSON.stringify(works)); 
+            return works; 
         } catch (error) {
             console(error); 
         }
-    }
-
-    return works;         
+            
 }
 
- export function createWorksHtml(works){
+ export function displayWorksHtml(works){
     const gallery = document.querySelector(".gallery");
 
     for(let work of works){
@@ -32,7 +29,8 @@ export async function getWorks(){
     }
 }
 
-export async function works(){
-    const works = await getWorks();  
-    createWorksHtml(works); 
+export async function getWorks(){ 
+    let works = await fetchWorks();   
+    displayWorksHtml(works); 
+    return works; 
 }

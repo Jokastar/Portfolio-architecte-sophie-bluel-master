@@ -39,7 +39,6 @@ form.addEventListener("submit", async (event)=>{
     } catch (error) {
         console.log(error); 
     } 
-
 })
 function showErrorMessage(message){
    const errMsg = document.querySelector(".err-msg"); 
@@ -61,17 +60,17 @@ export function CheckUserLoggedIn(){
    }
  
     if(token != null){
-    //remove the previous eventListener
+    //remove the login eventListener
     loginElement.removeEventListener("click", login)
  
-    //add the new eventListener
+    //add the logout eventListener
     loginElement.addEventListener("click", logout); 
  
     //change the innerText
     loginElement.innerText = "logout";
     }else{
- 
     loginElement.addEventListener("click", login)
     loginElement.innerText = "login"; 
   }
  }
+
