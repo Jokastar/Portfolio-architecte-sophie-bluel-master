@@ -4,10 +4,10 @@ import{CheckUserLoggedIn} from './login.js';
 //check if the user is Logged In
 CheckUserLoggedIn(); 
 //get all the works from the API
-const works = await getWorks();
+export const works = await getWorks();
   
 //get all the categories from the API
-await getCategories();
+export const categories = await getCategories();
 
  //adding eventListners to the filters
  const filters = document.querySelectorAll(".filter"); 

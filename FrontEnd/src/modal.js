@@ -1,192 +1,177 @@
+import { works, categories } from "./app.js"; 
+
+//creating the modals
+const addPictureModal = {
+  html: `<div id="addPicture" class="modal-header">
+  <i class="fa-solid fa-arrow-left"></i>
+  <i class="fa-solid fa-xmark close-button"></i>
+</div>
+<div class="modal-body">
+  <h3>Ajout photo</h3>
+  <div class="modal-load-picture-area">
+    <div id="drop-zone">
+    <div id="edit-mode-picture"></div>
+    <i class="fa-solid fa-image"></i>
+      <label for="load-picture" id="load-picture-label">+ Ajouter photo</label>
+      <input type="file" accept="image/*" id="load-picture"></input>
+      <p id="img-spec">jpg, png: 4mo max</p>
+    </div>
+    <div id="preview"></div>
+  </div>
+  <form action="#">
+    <div id="title-input">
+      <label for="title">Titre</label>
+      <input type="text" name="title" id="title">
+    </div>
+    <div id="category-input">
+      <label for="category">Catégorie</label>
+      <select name="categories" id="categories"></select>
+    </div>
+  </form>
+</div>
+<div class="modal-footer">
+  <input id="validate-button" type="submit" value="Valider">
+</div>`,
+editwork:[],
+openModal(){
+  document.querySelector("dialog").innerHTML = this.html;
+}, 
+closeModal(){ 
+  document.querySelector("dialog").close();
+},
+addEventListenersToHtmlElements(){
+  const modal = document.querySelector("dialog"); 
+  //add event listener to the close button
+  let closeButton = document.querySelector(".close-button");  
+  closeButton.addEventListener("click", ()=>{
+    this.closeModal(); 
+  })
+  //add event listener to the back button 
+  document.querySelector(".fa-arrow-left").addEventListener("click", ()=>{
+    this.closeModal(); 
+    editModal.init();  
+  })
+
+  //add event listener to the upload button 
+  const uploadButton = document.querySelector("#load-picture");
+  uploadButton.addEventListener('change', ()=>{
+    const imgLogo = document.querySelector(".fa-image");
+    const imgSpec = document.querySelector("#img-spec");
+    const uploadButtonLabel = document.querySelector("#load-picture-label");
+
+    let reader = new FileReader(); 
+    reader.readAsDataURL(uploadButton.files[0])
+    //adding the img to the html
+    reader.onload = () =>{
+      let loadPicture = document.querySelector("#edit-mode-picture");
+      loadPicture.innerHTML = `<img src=${reader.result} alt=${uploadButton.files[0].name}>`
+      //modifying the dropZone Html
+      loadPicture.style.display = "block"; 
+      imgLogo.style.display = "none";
+      imgSpec.style.display = "none";
+
+      uploadButtonLabel.style.padding = "3px";
+      uploadButtonLabel.style.width = "80px";
+      uploadButtonLabel.style.fontSize = "0.6rem"; 
+      uploadButtonLabel.innerText = "Changer photo"; 
+    }
+  })
   
-//creating the html for the 2 modals
-export function createEditPictureModalHtml() {
-  const modal = document.createElement("div");
-  modal.classList.add("modal", "active");
+},
+populateCategoriesForm(categories){
+  let form = document.querySelector("#categories"); 
+  for(let category of categories){
+    let option = document.createElement('option'); 
+    option.value = category.name; 
+    option.setAttribute("id",`${category.id}`);
+    option.innerText = `${category.name}`;
+    form.appendChild(option);   
+  }; 
+},
+init(){
+  this.openModal();
+  this.addEventListenersToHtmlElements();
+  this.populateCategoriesForm(categories);  
+},
+initEditPicture(work){
+  this.openModal();
+  this.addEventListenersToHtmlElements();
+  this.populateCategoriesForm(categories);
 
-  const modalHeader = document.createElement("div");
-  modalHeader.classList.add("modal-header");
-
-  const closeButton = document.createElement("i");
-  closeButton.classList.add("fa-solid", "fa-xmark", "close-button");
-  //adding the eventListener to the close button
-  closeButton.addEventListener('click', ()=>{
-    closeModal(closeButton);
-  });
-
-  modalHeader.appendChild(closeButton);
-
-  const modalBody = document.createElement("div");
-  modalBody.classList.add("modal-body");
-
-  const modalTitle = document.createElement("h3");
-  modalTitle.textContent = "Galerie photo";
-
-  const modalGrid = document.createElement("div");
-  modalGrid.classList.add("modal-grid");
-
-  modalBody.appendChild(modalTitle);
-  modalBody.appendChild(modalGrid);
-
-  const modalFooter = document.createElement("div");
-  modalFooter.classList.add("modal-footer");
-
-  const addPictureButton = document.createElement("input");
-  addPictureButton.id = "add-picture-button";
-  addPictureButton.type = "submit";
-  addPictureButton.value = "Ajouter une photo";
-
-  const deleteGalleryButton = document.createElement("p");
-  deleteGalleryButton.id = "delete-gallery";
-  deleteGalleryButton.textContent = "Supprimer la galerie";
-
-  modalFooter.appendChild(addPictureButton);
-  modalFooter.appendChild(deleteGalleryButton);
-
-  modal.appendChild(modalHeader);
-  modal.appendChild(modalBody);
-  modal.appendChild(modalFooter);
-
-  return modal;
+  //adding the work's title and picture to the html
+  let title = document.querySelector("#title"); 
+  title.value = work.title;
+  //adding the work's category
+  let categoriesForm = document.querySelector("#categories");
+  for (let i = 0; i < categoriesForm.options.length; i++) {
+    let option = categoriesForm.options[i];
+    if (option.getAttribute("id") === work.categoryId) {
+      categoriesForm.selectedIndex = i;
+      break;
+    }
+  }
+   
+  //adding the picture to the dropzone 
+  let dropZone = document.querySelector("#drop-zone");
+  dropZone.innerHTML = `<div id="edit-mode-picture"><img src=${work.imgSrc}></div>`; 
+}
 }
 
-export function createAddPictureModalHtml() {
-  // create the main modal element
-  const modal = document.createElement("div");
-  modal.classList.add("modal", "active");
-  modal.id = "addPicture";
+const editModal = {
+  html:`
+<div class="modal-header">
+  <i class="fa-solid fa-xmark close-button"></i>
+</div>
+<div class="modal-body">
+  <h3>Galerie photo</h3>
+  <div class="modal-grid"></div>
+</div>
+<div class="modal-footer">
+  <input id="add-picture-button" type="submit" value="Ajouter une photo">
+  <p id="delete-gallery">Supprimer la galerie</p>
+</div>`,
+deleteWorks:[],
+openModal(){
+  document.querySelector("dialog").innerHTML = this.html;
+  document.querySelector("dialog").showModal();
+  this.populateWorksGrid(works);
+},
+addEventListenersToHtmlElements(){
+  //add event listener to the close button
+  let closeButton = document.querySelector(".close-button"); 
+  closeButton.addEventListener("click", ()=>{
+    this.closeModal(); 
+  })
 
-  // create the header element with the back and close buttons
-  const header = document.createElement("div");
-  header.classList.add("modal-header");
+  //add event listener to the add picture button
+  let addPictureButton = document.querySelector("#add-picture-button"); 
+  addPictureButton.addEventListener("click", ()=>{
+    addPictureModal.init();  
+  })
 
-  const backButton = document.createElement("i");
-  backButton.classList.add("fa-solid", "fa-arrow-left");
-
-  const closeButton = document.createElement("i");
-  closeButton.classList.add("fa-solid", "fa-xmark", "close-button");
-  //adding the eventListener to the close button
-  closeButton.addEventListener('click', ()=>{
-    closeModal(closeButton);
-  });
-
-  header.appendChild(backButton);
-  header.appendChild(closeButton);
-
-  // create the body element with the title, picture area, and form
-  const body = document.createElement("div");
-  body.classList.add("modal-body");
-
-  const title = document.createElement("h3");
-  title.textContent = "Ajout photo";
-
-  const loadPictureArea = document.createElement("div");
-  loadPictureArea.classList.add("modal-load-picture-area");
-
-  const dropZone = document.createElement("div");
-  dropZone.id = "drop-zone";
-
-  const uploadIcon = document.createElement("i");
-  uploadIcon.classList.add("fa-solid", "fa-image");
-
-  const uploadButton = document.createElement("button");
-  uploadButton.id = "load-picture-button";
-  uploadButton.textContent = "+ Ajouter photo";
-
-  const uploadDesc = document.createElement("p");
-  uploadDesc.textContent = "jpg, png: 4mo max";
-
-  const preview = document.createElement("div");
-  preview.id = "preview";
-
-  dropZone.appendChild(uploadIcon);
-  dropZone.appendChild(uploadButton);
-  dropZone.appendChild(uploadDesc);
-
-  loadPictureArea.appendChild(dropZone);
-  loadPictureArea.appendChild(preview);
-
-  const form = document.createElement("form");
-  form.action = "#";
-
-  const titleInput = document.createElement("div");
-  titleInput.id = "title-input";
-
-  const titleLabel = document.createElement("label");
-  titleLabel.htmlFor = "title";
-  titleLabel.textContent = "Titre";
-
-  const titleField = document.createElement("input");
-  titleField.type = "text";
-  titleField.name = "title";
-  titleField.id = "title";
-
-  titleInput.appendChild(titleLabel);
-  titleInput.appendChild(titleField);
-
-  const categoryInput = document.createElement("div");
-  categoryInput.id = "category-input";
-
-  const categoryLabel = document.createElement("label");
-  categoryLabel.htmlFor = "category";
-  categoryLabel.textContent = "Catégorie";
-
-  const categorySelect = document.createElement("select");
-  categorySelect.id = "category";
-  categorySelect.name = "category";
-
-  categoryInput.appendChild(categoryLabel);
-  categoryInput.appendChild(categorySelect);
-
-  form.appendChild(titleInput);
-  form.appendChild(categoryInput);
-
-  body.appendChild(title);
-  body.appendChild(loadPictureArea);
-  body.appendChild(form);
-
-  // create the footer element with the submit button
-  const footer = document.createElement("div");
-  footer.classList.add("modal-footer");
-
-  const submitButton = document.createElement("input");
-  submitButton.id = "validate-button";
-  submitButton.type = "submit";
-  submitButton.value = "Valider";
-
-  footer.appendChild(submitButton);
-
-  // append the header, body, and footer to the modal element
-  modal.appendChild(header);
-  modal.appendChild(body);
-  modal.appendChild(footer);
-
-  return modal;
-}
-
-//utils function
-export function openModal(modal) {
- if(modal == null)return; 
- const overlay = document.querySelector(".overlay");
- modal.classList.add("active");
- overlay.classList.add("active");
-}
-function closeModal(button) {
-  const modal = button.closest(".modal");
-  const overlay = document.querySelector(".overlay"); 
-  modal.classList.remove("active");
-  overlay.classList.remove("active");
-}
-function displayOverlay(){
-  const body = document.querySelector("body"); 
-  const overlay = document.createElement("div"); 
-  overlay.setAttribute("class", "overlay active");
-  body.appendChild(overlay);
-}
-function createModalWorksHtml(work) {
+  //add event listener to the edits buttons
+  let editButtons = document.querySelectorAll("#edit-button");  
+  for(let button of editButtons){
+      button.addEventListener("click", ()=>{
+        let workCard = button.closest(".work-card");
+        let work = {
+          id: workCard.id,
+          imgSrc: workCard.querySelector("img").src,
+          title: workCard.querySelector("img").alt,
+          categoryId:workCard.categoryId
+        } 
+        addPictureModal.initEditPicture(work); 
+      })
+  } 
+}, 
+closeModal(){
+  document.querySelector("dialog").close();
+},
+createModalWorksHtml(work) {
   const workCard = document.createElement("div");
   workCard.classList.add("work-card");
-  workCard.id=`${work.id}`; 
+  workCard.id=`${work.id}`;
+  workCard.categoryId = `${work.categoryId}`; 
 
   const cardImg = document.createElement("div");
   cardImg.classList.add("card-img");
@@ -209,51 +194,70 @@ function createModalWorksHtml(work) {
   workCard.appendChild(editButton);
 
   return workCard;
-}
-export function populateWorksGrid(imagesList){
-  for(let image of imagesList){
-    createModalWorksHtml(img)
+},
+populateWorksGrid(works){
+  let grid = document.querySelector(".modal-grid"); 
+  for(let work of works){
+    let workHtml = this.createModalWorksHtml(work);
+    grid.appendChild(workHtml);  
   }
+},
+init(){
+  this.openModal();
+  this.addEventListenersToHtmlElements(); 
+}
 }
 
-/* create the different button to edit with a specific id when that type of button
-   is clicked started a swotch case and in fuction of the id create the appropiate 
-   modal
-*/
-
-function chooseModalToOpen(sectionId){
-  switch(sectionId){
-    case "introduction":
-      console.log("intro");
-      break;
-    case "portfolio":
-      let modal = createEditPictureModalHtml();
-      let section = document.querySelector(`section#${sectionId}`);
-      section.appendChild(modal); 
-      break;
-    default:
-      console.log("error");
-      break;    
-  }
-}
-
-function addTheEditButton(){
-//filter the section where we want to add the edit button
-  const sections = Array.from(document.querySelectorAll("section")); 
-  const filterSections = sections.filter(s => s.attributes.id.value !== "contact");
-
-//adding the edit button to the sections
- filterSections.forEach(s =>{
-  let modal = s.attributes[""]; 
+//add the edit button to the html page
+export function displayEditButton(){
   const editButton = document.createElement("button");
-  editButton.innerText = "éditer"; 
-  editButton.addEventListener("click", ()=> openModal(modal));
-
-  s.appendChild(editButton); 
- }) 
-  
+  const projectsTitle = document.querySelector("#projects");  
+  const span = document.createElement("span");
+  span.innerText = "éditer";
+  const icon = document.createElement("i");  
+  icon.setAttribute("class", "fa-solid fa-pen-to-square"); 
+  editButton.appendChild(icon); 
+  editButton.appendChild(span);   
+  projectsTitle.appendChild(editButton);
+editButton.addEventListener("click", ()=>{
+  editModal.init();   
+ })   
 }
-addTheEditButton(); 
+ 
+function displayEditBar(){
+  let body = document.querySelector("header");
+  //creating the edit bar html 
+  let editBar = document.createElement("div");
+  editBar.setAttribute("id", "edit-bar");   
+  let editBarHtml = `
+  <button id="edit-mode-btn" class="edit-bar-btn">
+    <i class="fa-solid fa-pen-to-square"></i>
+    <span>Mode édition</span>
+  </button>
+  <button id="publish-change-btn" class="edit-bar-btn">
+    Publier les changements
+  </button>
+  `;
+editBar.innerHTML = editBarHtml; 
+body.appendChild(editBar);
+
+//add the eventlisteners to the edit bar buttons
+let editModeButton = document.querySelector("#edit-mode-btn"); 
+let publishChangeButton = document.querySelector("#publish-change-btn"); 
+editModeButton.addEventListener("click", ()=>{
+  editModeButton.classList.add("on"); 
+  publishChangeButton.classList.remove("on");
+  displayEditButton();
+})
+publishChangeButton.addEventListener("click", ()=>{
+  publishChangeButton.classList.add("on"); 
+  editModeButton.classList.remove("on");
+})
+
+}
+
+ 
+  
 
 
 

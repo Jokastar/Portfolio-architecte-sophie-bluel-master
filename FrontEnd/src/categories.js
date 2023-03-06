@@ -27,6 +27,7 @@ function displayCategoriesHtml(categories){
 export async function getCategories(){
     const categories = await fetchCategories(); 
     displayCategoriesHtml(categories); 
+    return categories; 
 }
 
  export async function filterElement(filterId, works){

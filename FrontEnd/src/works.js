@@ -6,13 +6,14 @@ export async function fetchWorks(){
             works = await response.json();
             return works; 
         } catch (error) {
-            console(error); 
+            console.log(error); 
         }
             
 }
 
  export function displayWorksHtml(works){
-    const gallery = document.querySelector(".gallery");
+    let gallery = document.querySelector(".gallery");
+    console.log(gallery); 
 
     for(let work of works){
         const figure = document.createElement("figure");
