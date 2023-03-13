@@ -11,10 +11,10 @@ export async function fetchWorks(){
             
 }
 
- export function displayWorksHtml(works){
+ export function displayWorksHtml(works){ 
     let gallery = document.querySelector(".gallery");
-    console.log(gallery); 
-
+    gallery.innerHTML = ""; 
+    
     for(let work of works){
         const figure = document.createElement("figure");
         const img = document.createElement("img"); 
@@ -30,8 +30,7 @@ export async function fetchWorks(){
     }
 }
 
-export async function getWorks(){ 
+export async function displayWorks(){ 
     let works = await fetchWorks();   
-    displayWorksHtml(works); 
-    return works; 
+    displayWorksHtml(works);  
 }

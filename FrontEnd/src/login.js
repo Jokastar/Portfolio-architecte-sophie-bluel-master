@@ -1,4 +1,4 @@
-import {displayEditButton} from './modal.js'; 
+ 
 //login to the server
 const form = document.querySelector("form"); 
 
@@ -22,29 +22,32 @@ form.addEventListener("submit", async (event)=>{
             //put the token to the localeStorage and redirect to the main page 
             window.localStorage.setItem("token", token.token); 
             window.location.href = "http://localhost:5500/FrontEnd";
-            displayEditBar();  
         }else{
-            switch(response.status){
-                case 404:
-                    showErrorMessage("Veuillez entrer votre email et mot de passe");
-                    break; 
-                case 401:
-                    showErrorMessage("Vérifiez votre email et mot de passe");
-                    break; 
-                default:
-                    showErrorMessage(response.statusText)
-                    break;    
-            }
+           showErrorMessage(response); 
         }
         
     } catch (error) {
         console.log(error); 
     } 
 })
-function showErrorMessage(message){
-   const errMsg = document.querySelector(".err-msg"); 
-   errMsg.innerText = message; 
-   errMsg.style.display = "initial"; 
+function showErrorMessage(response){
+    const errMsg = document.querySelector(".err-msg");
+    if(errMsg === null){
+        console.log(response); 
+        return; 
+    }  
+    switch(response.status){
+        case 404:
+            errMsg.innerText = "Veuillez entrer votre email et mot de passe";
+            break; 
+        case 401:
+            errMsg.innerText = "Vérifiez votre email et mot de passe";
+            break; 
+        default:
+            errMsg.innerText = response.statusText; 
+            break;    
+    } 
+    errMsg.style.display = "initial";
 }
 
 export function CheckUserLoggedIn(){
@@ -53,7 +56,7 @@ export function CheckUserLoggedIn(){
     const loginElement = document.querySelector(".login");
  
     // The eventListeners
-    const logout = () =>{
+    const logout = () =>{ 
     window.localStorage.removeItem("token"); 
    }
     const login = () =>{
@@ -69,10 +72,12 @@ export function CheckUserLoggedIn(){
  
     //change the innerText
     loginElement.innerText = "logout";
+    return true; 
     }else{
     
     loginElement.addEventListener("click", login)
     loginElement.innerText = "login"; 
+    return false; 
   }
  }
 

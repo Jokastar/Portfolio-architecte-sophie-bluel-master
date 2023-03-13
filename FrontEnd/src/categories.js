@@ -24,7 +24,7 @@ function displayCategoriesHtml(categories){
     }
 }
 
-export async function getCategories(){
+export async function displayCategories(){
     const categories = await fetchCategories(); 
     displayCategoriesHtml(categories); 
     return categories; 

@@ -1,13 +1,18 @@
-import { getWorks,displayWorksHtml} from "./works.js";
-import {getCategories, filterElement} from "./categories.js";
+import { displayWorks,displayWorksHtml, fetchWorks} from "./works.js";
+import {displayCategories, filterElement} from "./categories.js";
 import{CheckUserLoggedIn} from './login.js'; 
+import {displayEditBar} from './modal.js'; 
 //check if the user is Logged In
-CheckUserLoggedIn(); 
+if(CheckUserLoggedIn()){
+   displayEditBar(); 
+}
+
+const works = await fetchWorks(); 
 //get all the works from the API
-export const works = await getWorks();
+await displayWorks();
   
 //get all the categories from the API
-export const categories = await getCategories();
+await displayCategories();
 
  //adding eventListners to the filters
  const filters = document.querySelectorAll(".filter"); 

@@ -1,6 +1,6 @@
 #edit-bar{
   background-color: black;
-  padding: 10px;
+  padding: 5px;
   width:100%;
   position: fixed;
   top: 0;
@@ -12,14 +12,35 @@
   background-color: black;
   color: white;
   border: none;
-  padding:5px;
+  padding:6px 20px;
   cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  margin: 0px 10px;
+  font-family: "Work Sans";
 }
  .on{
   background-color: white;
   color: black;
   border-radius: 40px;
   cursor: pointer;
+}
+.edit-btn{
+  background-color: inherit;
+  border: none;
+  margin-left: 20px;
+  cursor: pointer;
+}
+#introduction button{
+  position: relative;
+  left: 30px;
+  top: 10px;
+  
+}
+
+  button span{
+  margin-left: 5px;
+  font-family: "Work Sans";
 }
 
 dialog{
@@ -30,10 +51,12 @@ dialog{
     width: 600px;
     max-width: 80%;
     border: none;
+    font-family: "Work Sans";
   }
   .active{
     display:block;
   }
+  /** edit or remove work modal **/
   .modal-header{
     display: flex;
     justify-content: flex-end;
@@ -78,15 +101,23 @@ dialog{
   .card-img i {
     position: absolute;
     display: flex;
-    top: 2%;
-    left: 85%;
+    top: 5%;
+    left: 75%;
     color: white;
     cursor: pointer;
+    padding: 8px 4px;
+    background-color: black;
+    border-radius: 2px;
+  }
+
+  .card-img i:hover{
+    color: red;
   }
 
   #edit-button{
     cursor: pointer;
   }
+  
 
   input{
     padding: 10px 20px;
@@ -96,22 +127,7 @@ dialog{
     cursor: pointer;
   }
 
-  .overlay{
-    position: fixed;
-    opacity: 0;
-    left: 0;
-    right: 0;
-    top: 0;
-    bottom: 0;
-    background-color: rgba(0, 0, 0, 0.4);
-    pointer-events: none;
-  }
-  
-  .overlay.active {
-    opacity: 1;
-    pointer-events: all; 
-  }
-
+  /** add work modal **/
   .modal-load-picture-area{
     width: 420px;
     height: 170px;
@@ -126,7 +142,7 @@ dialog{
 }
   #drop-zone {
     width:100%;
-    height: 200px;
+    height: 190px;
     text-align: center;
     background-color: #E8F1F6;
     display: flex;
@@ -134,6 +150,11 @@ dialog{
     justify-content: space-evenly;
     align-items: center;
     margin: 30px 0px;
+  }
+  .fa-image{
+    color: gray;
+    font-size: 5em;
+    margin-top: 15px;
   }
 
   #load-picture-label{
@@ -144,18 +165,22 @@ dialog{
     width: 170px;
     padding: 10px 15px;
     cursor: pointer;
+    font-weight: 900;
+    font-size: 1 rem;
   }
   input[type="file"]{
     display: none;
   }
   form{
     width: 420px;
-    margin-top: 50px;
   }
   #title-input, #category-input{
     display: flex;
     flex-direction: column;
     margin: 20px 0px;
+  }
+  #title-input{
+    margin-top: 40px;
   }
 
   input, select{
@@ -169,14 +194,13 @@ dialog{
   #validate-button{
     background-color: #A7A7A7;
     color: white;
-    padding-right: 20px;
-    padding-left: 20px;
+    padding: 10px 20px;
   }
 
   #edit-mode-picture{
     width: 130px;
     height: 80%;
-    display: none;
+    display: none;; 
   }
 
   #edit-mode-picture img{
