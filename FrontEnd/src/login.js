@@ -19,9 +19,10 @@ form.addEventListener("submit", async (event)=>{
         }) 
         if(response.ok){
             token = await response.json();
+            const time = 5600; 
             //put the token to the localeStorage and redirect to the main page 
-            window.localStorage.setItem("token", token.token); 
-            window.location.href = "http://localhost:5500/FrontEnd";
+            window.localStorage.setItem("token", token.token);
+            window.location.href = "http://localhost:5500/";
         }else{
            showErrorMessage(response); 
         }
@@ -60,7 +61,7 @@ export function CheckUserLoggedIn(){
     window.localStorage.removeItem("token"); 
    }
     const login = () =>{
-    window.location.href = "http://localhost:5500/FrontEnd/login.html"; 
+    window.location.href = "http://localhost:5500/login.html"; 
    }
  
     if(token != null){

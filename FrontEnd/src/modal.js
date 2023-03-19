@@ -5,164 +5,6 @@ let works = await fetchWorks();
 const categories = await fetchCategories();
 
 //creating the modals
-const addWorkModal = {
-  html: `<div id="addPicture" class="modal-header">
-  <i class="fa-solid fa-arrow-left"></i>
-  <i class="fa-solid fa-xmark close-button"></i>
-</div>
-<div class="modal-body">
-  <h3>Ajout photo</h3>
-<form action="#" id="addWorkForm">
-  <div class="modal-load-picture-area">
-    <div id="drop-zone">
-    <div id="edit-mode-picture"></div>
-    <i class="fa-solid fa-image"></i>
-      <label for="load-picture" id="load-picture-label">+ Ajouter photo</label>
-      <input type="file" accept="image/*" id="load-picture" name="image" required></input>
-      <p id="img-spec">jpg, png: 4mo max</p>
-    </div>
-  </div>
-    <div id="title-input">
-      <label for="title">Titre</label>
-      <input type="text" name="title" id="title" required>
-    </div>
-    <div id="category-input">
-      <label for="category">Catégorie</label>
-      <select name="categories" id="categories" required></select>
-    </div>
-    <div class="modal-footer">
-      <input id="validate-button" type="submit" value="Valider"></input>
-    </div>
-  </form>
-</div>`,
-  openModal() {
-    document.querySelector("dialog").innerHTML = this.html;
-  },
-  closeModal() {
-    document.querySelector("dialog").close();
-    displayWorksHtml(works);   
-  },
-  addEventListenersToHtmlElements() {
-    const modal = document.querySelector("dialog");
-    // 1.add event listener to the close button
-    let closeButton = document.querySelector(".close-button");
-    closeButton.addEventListener("click", () => {
-      this.closeModal();
-    })
-    //2.add event listener to the back button 
-    document.querySelector(".fa-arrow-left").addEventListener("click", () => {
-      this.closeModal();
-      editOrRemoveWorkModal.init();
-    })
-
-    //3.add event listener to the upload button 
-    const uploadButton = document.querySelector("#load-picture");
-    uploadButton.addEventListener('change', () => {
-      const imgLogo = document.querySelector(".fa-image");
-      const imgSpec = document.querySelector("#img-spec");
-      const uploadButtonLabel = document.querySelector("#load-picture-label");
-
-      let reader = new FileReader();
-      reader.readAsDataURL(uploadButton.files[0])
-      //adding the img to the html
-      reader.onload = () => {
-        let loadPicture = document.querySelector("#edit-mode-picture");
-        loadPicture.innerHTML = `<img src=${reader.result} alt=${uploadButton.files[0].name}>`
-      //modifying the dropZone Html
-        loadPicture.style.display = "block";
-        imgLogo.style.display = "none";
-        imgSpec.style.display = "none";
-      //changing upload button css
-        uploadButtonLabel.style.padding = "3px";
-        uploadButtonLabel.style.width = "80px";
-        uploadButtonLabel.style.fontSize = "0.6rem";
-        uploadButtonLabel.innerText = "Changer photo";
-        //changing the validate button css
-        const validateButton = document.getElementById("validate-button"); 
-        validateButton.style.backgroundColor = "rgb(29, 97, 84)"; 
-      }
-    })
-
-    //4.add event listener to the form
-    const form = document.getElementById("addWorkForm");
-    form.addEventListener("submit", (event) => {
-      event.preventDefault(); 
-
-      const title = document.getElementById("title").value;
-      const category = document.getElementById("categories").value; 
-      const img = document.getElementById("load-picture").files[0];
-      
-      const newWork = new FormData();
-      newWork.append("image", img);
-      newWork.append("title", title);
-      newWork.append("category", category);
-      this.sendWork(newWork);
-    })
-  },
-  async sendWork(newWork) {
-    let token = window.localStorage.getItem("token");
-    if(token === null){
-      window.location.href = "http://localhost:5500/FrontEnd/login.html"
-      return; 
-    }
-   try {
-      const response = await fetch("http://localhost:5678/api/works", {
-        method: "POST",
-        headers: {
-          "Authorization": `Bearer ${token}`
-        },
-        body: newWork
-      })
-      if (response.ok){ 
-        works = await fetchWorks();
-        console.log("send"); 
-      }
-  
-    } catch (error) {
-      console.log(error.message)
-    } 
-  },
-  populateCategoriesForm(categories) {
-    let form = document.querySelector("#categories");
-    for (let category of categories) {
-      let option = document.createElement('option');
-      option.value = `${category.id}`
-      option.innerText = `${category.name}`;
-      form.appendChild(option);
-    };
-  },
-  init() {
-    this.openModal();
-    this.addEventListenersToHtmlElements();
-    this.populateCategoriesForm(categories);
-  },
-  initEditPicture(work) {
-    this.openModal();
-    this.addEventListenersToHtmlElements();
-    this.populateCategoriesForm(categories);
-
-    //adding the work's title and picture to the html
-    let title = document.querySelector("#title");
-    title.value = work.title;
-    //adding the work's category
-    let categoriesForm = document.querySelector("#categories");
-    for (let i = 0; i < categoriesForm.options.length; i++) {
-      let option = categoriesForm.options[i];
-      if (option.getAttribute("id") === work.categoryId) {
-        categoriesForm.selectedIndex = i;
-        break;
-      }
-    }
-
-    //adding the picture to the dropzone 
-    let dropZone = document.querySelector("#drop-zone");
-    
-    dropZone.innerHTML = `<div id="edit-mode-picture"><img src=${work.imgSrc}></div>`;
-    let imgContainer = document.getElementById("edit-mode-picture"); 
-    imgContainer.style.display = "block";
-  }
-}
-
 const editOrRemoveWorkModal = {
   html: `
 <div class="modal-header">
@@ -213,13 +55,16 @@ const editOrRemoveWorkModal = {
     let deleteButtons = document.querySelectorAll(".fa-trash-can");
     for (let deleteButton of deleteButtons) {
       deleteButton.addEventListener("click", () => {
-        const workCardId = deleteButton.closest(".work-card").getAttribute("id");
-        this.removeWork(workCardId);
+        const workCard = deleteButton.closest(".work-card");
+        this.removeWork(workCard.getAttribute("id"));
+        workCard.remove();
+        return false; 
       })
     }
   },
-  closeModal() {
+  async closeModal() {
     document.querySelector("dialog").close();
+    works = await fetchWorks(); 
     displayWorksHtml(works);
   },
   createModalWorksHtml(work) {
@@ -261,21 +106,18 @@ const editOrRemoveWorkModal = {
   async removeWork(id) {
     let token = window.localStorage.getItem("token");
     if(token === null){
-      window.location.href = "http://localhost:5500/FrontEnd/login.html"; 
+      window.location.href = "http://localhost:5500/login.html"; 
       return; 
     }
     try {
       const response = await fetch(`http://localhost:5678/api/works/${id}`, {
         method: "DELETE",
+        follow: "manual",
         headers: {
           "Content-Type": "application/json",
           "Authorization": `Bearer ${token}`
         }
       })
-      if (response.ok) {
-        works = await fetchWorks();
-        editOrRemoveWorkModal.populateWorksGrid(works);
-      }
     } catch (error) {
       console.log(error);
     }
@@ -283,6 +125,191 @@ const editOrRemoveWorkModal = {
   init() {
     this.openModal();
     this.addEventListenersToHtmlElements();
+  }
+}
+
+const addWorkModal = {
+  html: `<div id="addPicture" class="modal-header">
+  <i class="fa-solid fa-arrow-left"></i>
+  <i class="fa-solid fa-xmark close-button"></i>
+</div>
+<div class="modal-body">
+  <h3>Ajout photo</h3>
+<form action="#" id="addWorkForm">
+  <div class="modal-load-picture-area">
+    <div id="drop-zone">
+    <div id="edit-mode-picture"></div>
+    <i class="fa-solid fa-image"></i>
+      <label for="load-picture" id="load-picture-label">+ Ajouter photo</label>
+      <input type="file" accept="image/*" id="load-picture" name="image" required></input>
+      <p id="img-spec">jpg, png: 4mo max</p>
+    </div>
+  </div>
+    <div id="title-input">
+      <label for="title">Titre</label>
+      <input type="text" name="title" id="title" required>
+    </div>
+    <div id="category-input">
+      <label for="category">Catégorie</label>
+      <select name="categories" id="categories" required></select>
+    </div>
+    <div class="modal-footer">
+      <button id="validate-button" type="submit">Valider</button>
+    </div>
+  </form>
+</div>`,
+  openModal() {
+    document.querySelector("dialog").innerHTML = this.html; 
+  },
+  closeModal() {
+    document.querySelector("dialog").close();
+    displayWorksHtml(works);   
+  },
+  addEventListenersToHtmlElements() {
+    const modal = document.querySelector("dialog");
+    // 1.add event listener to the close button
+    let closeButton = document.querySelector(".close-button");
+    closeButton.addEventListener("click", () => {
+      this.closeModal();
+    })
+    //2.add event listener to the back button 
+    document.querySelector(".fa-arrow-left").addEventListener("click", () => {
+      this.closeModal();
+      editOrRemoveWorkModal.init();
+    })
+
+    //3.add event listener to the upload file button 
+    const uploadButton = document.querySelector("#load-picture");
+    uploadButton.addEventListener('change', () => {
+      const imgLogo = document.querySelector(".fa-image");
+      const imgSpec = document.querySelector("#img-spec");
+      const uploadButtonLabel = document.querySelector("#load-picture-label");
+
+      let reader = new FileReader();
+      reader.readAsDataURL(uploadButton.files[0])
+      //adding the img to the html
+      reader.onload = () => {
+        let loadPicture = document.querySelector("#edit-mode-picture");
+        loadPicture.innerHTML = `<img src=${reader.result} alt=${uploadButton.files[0].name}>`
+      //modifying the dropZone Html
+        loadPicture.style.display = "block";
+        imgLogo.style.display = "none";
+        imgSpec.style.display = "none";
+      //changing upload button css
+        uploadButtonLabel.style.padding = "3px";
+        uploadButtonLabel.style.width = "80px";
+        uploadButtonLabel.style.fontSize = "0.6rem";
+        uploadButtonLabel.innerText = "Changer photo";
+        //changing the validate button css
+        const validateButton = document.getElementById("validate-button"); 
+        validateButton.style.backgroundColor = "rgb(29, 97, 84)"; 
+      }
+    })
+
+    //4.add event listener to the form
+    const form = document.getElementById("addWorkForm");
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+
+      //adding the loading animation to the submit button 
+      const sendButton = document.getElementById("validate-button");
+      const loadingAnimHtml = ` <div class="loading-pt-wrapper">
+      <div class="loading-pt pt-1"></div>
+      <div class="loading-pt pt-2"></div>
+      <div class="loading-pt pt3"></div>
+    </div>`;
+    sendButton.innerHTML = loadingAnimHtml; 
+    
+    //disable all click event on the modal 
+      const modal = document.querySelector("dialog"); 
+      modal.style.pointerEvents = "none";
+
+    // create the work object
+      const title = document.getElementById("title").value;
+      const category = document.getElementById("categories").value; 
+      const img = document.getElementById("load-picture").files[0];
+      
+      const newWork = new FormData();
+      newWork.append("image", img);
+      newWork.append("title", title);
+      newWork.append("category", category);
+
+      //send the work to the server
+      const httpRequestResponse = await this.sendWork(newWork); 
+      
+      if(httpRequestResponse){
+        const sent = `<p id="sendWorkButtonActive">Envoyé</p>`;
+        sendButton.innerHTML = sent;
+       setTimeout(()=>{
+          this.init(); 
+          modal.style.pointerEvents = "auto";  
+        }, 2000);  
+      }else{
+        console.log("an unexpected error occured"); 
+      } 
+    })
+  },
+  async sendWork(newWork) {
+    let token = window.localStorage.getItem("token");
+    if(token === null){
+      window.location.href = "http://localhost:5500/login.html"
+      return; 
+    }
+   try {
+      const response = await fetch("http://localhost:5678/api/works", {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${token}`
+        },
+        body: newWork
+      })
+      if(response.ok){ 
+        works = await fetchWorks();
+        return true; 
+      }
+  
+    } catch (error) {
+      console.log(error.message)
+    } 
+  },
+  populateCategoriesForm(categories) {
+    let form = document.querySelector("#categories");
+    for (let category of categories) {
+      let option = document.createElement('option');
+      option.value = `${category.id}`
+      option.innerText = `${category.name}`;
+      form.appendChild(option);
+    };
+  },
+  init() {
+    this.openModal();
+    this.addEventListenersToHtmlElements();
+    this.populateCategoriesForm(categories);
+  },
+  initEditPicture(work) {
+    this.openModal();
+    this.addEventListenersToHtmlElements();
+    this.populateCategoriesForm(categories);
+
+    //adding the work's title and picture to the html
+    let title = document.querySelector("#title");
+    title.value = work.title;
+    //adding the work's category
+    let categoriesForm = document.querySelector("#categories");
+    for (let i = 0; i < categoriesForm.options.length; i++) {
+      let option = categoriesForm.options[i];
+      if (option.getAttribute("id") === work.categoryId) {
+        categoriesForm.selectedIndex = i;
+        break;
+      }
+    }
+
+    //adding the picture to the dropzone 
+    let dropZone = document.querySelector("#drop-zone");
+    
+    dropZone.innerHTML = `<div id="edit-mode-picture"><img src=${work.imgSrc}></div>`;
+    let imgContainer = document.getElementById("edit-mode-picture"); 
+    imgContainer.style.display = "block";
   }
 }
 
@@ -299,29 +326,39 @@ function createEditButton(){
   return editButton; 
 }
 function displayEditButton() {
-  const introductionSection = document.querySelector("#introduction figure"); 
+  const introductionSectionImg = document.querySelector("#introduction figure");
+  const introductionSectionArticle = document.querySelector("#introduction article");  
   const projectsSection = document.querySelector("#projects");
+  
 
-  if (projectsSection.querySelector("button") === null && introductionSection.querySelector("button") === null){
-    const introductionEditButton = createEditButton(); 
+  if (projectsSection.querySelector("button") === null && introductionSectionImg.querySelector("button") === null){
+    const introductionEditButtonImg = createEditButton();
+    const introductionEditButtonArticle = createEditButton();  
     const projectsdEditButton = createEditButton();
-     
-    introductionSection.appendChild(introductionEditButton); 
+    
+    introductionSectionArticle.insertBefore(introductionEditButtonArticle, document.querySelector("#introduction article h2"));  
+    introductionSectionImg.appendChild(introductionEditButtonImg); 
+    
 
     projectsSection.appendChild(projectsdEditButton);
     projectsdEditButton.addEventListener("click", () => {
+      //check if the user is logged in 
+      if(window.localStorage.getItem("token") === null) window.location.href = "http://localhost:5500/index.html"
       editOrRemoveWorkModal.init();
     })
   }
   return;
 }
 function removeEditButton() {
-  const editButton = document.querySelector("#portfolio button");
-  editButton.remove();
+  const editButtons = document.querySelectorAll(".edit-btn");
+  for(let btn of editButtons){
+    btn.remove(); 
+  }
+  
 }
 
 export function displayEditBar() {
-  let body = document.querySelector("header");
+  let body = document.querySelector("body");
   //creating the edit bar html 
   let editBar = document.createElement("div");
   editBar.setAttribute("id", "edit-bar");

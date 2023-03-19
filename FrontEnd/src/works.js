@@ -7,8 +7,7 @@ export async function fetchWorks(){
             return works; 
         } catch (error) {
             console.log(error); 
-        }
-            
+        }           
 }
 
  export function displayWorksHtml(works){ 

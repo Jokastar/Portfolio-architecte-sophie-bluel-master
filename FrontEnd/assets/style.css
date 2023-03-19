@@ -48,7 +48,7 @@ table {
 }
 /** end reset css**/
 body {
-	max-width: 1140px;
+	/*max-width: 1140px;*/
 	margin:auto;
 	font-family: 'Work Sans';
 	font-size: 14px;
@@ -57,10 +57,10 @@ body {
 header {
 	display: flex;
 	justify-content: space-between;
-	margin: 50px 0
+	margin: 80px 50px;  
 }
 section {
-	margin: 50px 0
+	margin: 50px 150px; 
 }
 
 h1{
@@ -123,12 +123,11 @@ nav img{
 	align-items: center;
 }
 #introduction figure {
-	flex: 1
+	width: 60%;
 }
 #introduction img {
 	display: block;
-	margin: auto;
-	width: 80%;
+	width: 85%;
 }
 
 #introduction article {
