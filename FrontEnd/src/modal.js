@@ -37,7 +37,7 @@ const editOrRemoveWorkModal = {
     })
 
     //3.add event listener to the edits buttons
-    let editButtons = document.querySelectorAll("#edit-button");
+    /*let editButtons = document.querySelectorAll("#edit-button");
     for (let button of editButtons) {
       button.addEventListener("click", () => {
         let workCard = button.closest(".work-card");
@@ -49,23 +49,24 @@ const editOrRemoveWorkModal = {
         }
         addWorkModal.initEditPicture(work);
       })
-    }
+    } */
 
     //4.add event listeners to the delete button
     let deleteButtons = document.querySelectorAll(".fa-trash-can");
     for (let deleteButton of deleteButtons) {
       deleteButton.addEventListener("click", () => {
         const workCard = deleteButton.closest(".work-card");
-        this.removeWork(workCard.getAttribute("id"));
+        let workId = workCard.getAttribute("id"); 
+        this.removeWork(workId);
         workCard.remove();
+        works = works.filter(work => work.id !== parseInt(workId)); 
         return false; 
       })
     }
   },
   async closeModal() {
-    document.querySelector("dialog").close();
-    works = await fetchWorks(); 
-    displayWorksHtml(works);
+    document.querySelector("dialog").close(); 
+    displayWorksHtml(works); 
   },
   createModalWorksHtml(work) {
     const workCard = document.createElement("div");
@@ -161,8 +162,9 @@ const addWorkModal = {
   openModal() {
     document.querySelector("dialog").innerHTML = this.html; 
   },
-  closeModal() {
+  async closeModal() {
     document.querySelector("dialog").close();
+    works = await fetchWorks(); 
     displayWorksHtml(works);   
   },
   addEventListenersToHtmlElements() {

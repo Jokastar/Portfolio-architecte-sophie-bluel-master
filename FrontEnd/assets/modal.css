@@ -206,7 +206,7 @@ dialog{
 	  border-radius: 60px ;
 	  border: none;
     height: 50px;
-    filter: blur(0);
+    cursor: pointer;
   }
 
   #edit-mode-picture{
