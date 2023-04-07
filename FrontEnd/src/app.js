@@ -10,9 +10,10 @@ if(CheckUserLoggedIn()){
 }
 
 //get all the works from the API and display them
-const works = await fetchWorks(); 
-await displayWorks();
-  
+let works = await fetchWorks()
+window.localStorage.setItem("works", JSON.stringify(works));
+await displayWorks(JSON.parse(window.localStorage.getItem("works")));
+   
 //display all the categories from the API
 await displayCategories();
 
@@ -20,6 +21,7 @@ await displayCategories();
  const filters = document.querySelectorAll(".filter"); 
  for(let filter of filters){
     filter.addEventListener("click", async ()=>{
+        let works = JSON.parse(window.localStorage.getItem("works"));  
         const gallery = document.querySelector(".gallery"); 
         const id = filter.id;
         const filteredList = await filterElement(id, works);
@@ -40,6 +42,7 @@ await displayCategories();
  function removeToken(time){
    setTimeout(function() {
        localStorage.removeItem("token");
+       localStorage.removeItem("works"); 
      }, time);
 }
 

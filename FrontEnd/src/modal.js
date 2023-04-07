@@ -1,7 +1,6 @@
 import { fetchWorks, displayWorksHtml } from './works.js';
 import { fetchCategories } from './categories.js';
 
-let works = await fetchWorks();
 const categories = await fetchCategories();
 
 //creating the modals
@@ -21,7 +20,8 @@ const editOrRemoveWorkModal = {
   openModal() {
     document.querySelector("dialog").innerHTML = this.html;
     document.querySelector("dialog").showModal();
-    this.populateWorksGrid(works);
+    this.populateWorksGrid(JSON.parse(window.localStorage.getItem("works")));
+    document.querySelector(".overlay").style.display= "block";
   },
   addEventListenersToHtmlElements() {
     //1.add event listener to the close button
@@ -36,37 +36,37 @@ const editOrRemoveWorkModal = {
       addWorkModal.init();
     })
 
-    //3.add event listener to the edits buttons
-    /*let editButtons = document.querySelectorAll("#edit-button");
-    for (let button of editButtons) {
-      button.addEventListener("click", () => {
-        let workCard = button.closest(".work-card");
-        let work = {
-          id: workCard.id,
-          imgSrc: workCard.querySelector("img").src,
-          title: workCard.querySelector("img").alt,
-          categoryId: workCard.categoryId
-        }
-        addWorkModal.initEditPicture(work);
-      })
-    } */
-
     //4.add event listeners to the delete button
     let deleteButtons = document.querySelectorAll(".fa-trash-can");
     for (let deleteButton of deleteButtons) {
-      deleteButton.addEventListener("click", () => {
+      deleteButton.addEventListener("click", async () => {
         const workCard = deleteButton.closest(".work-card");
         let workId = workCard.getAttribute("id"); 
-        this.removeWork(workId);
-        workCard.remove();
+        let httpResponse = await this.removeWork(workId); 
+        
+        if(httpResponse){
+        workCard.remove();  
+        let works = JSON.parse(window.localStorage.getItem("works")); 
         works = works.filter(work => work.id !== parseInt(workId)); 
+        window.localStorage.setItem("works", JSON.stringify(works));
+        } 
         return false; 
       })
     }
+
+    //5.add event listener on the overlay
+    document.querySelector(".overlay").addEventListener("click", ()=>{
+      //this.closeModal();
+      console.log("click");  
+    })
+
   },
   async closeModal() {
-    document.querySelector("dialog").close(); 
+    let works = JSON.parse(window.localStorage.getItem("works"));
     displayWorksHtml(works); 
+    document.querySelector("dialog").close(); 
+    document.querySelector(".overlay").style.display= "none";
+     
   },
   createModalWorksHtml(work) {
     const workCard = document.createElement("div");
@@ -119,8 +119,10 @@ const editOrRemoveWorkModal = {
           "Authorization": `Bearer ${token}`
         }
       })
+      if(response.ok) return true; 
     } catch (error) {
       console.log(error);
+      return false; 
     }
   },
   init() {
@@ -158,29 +160,31 @@ const addWorkModal = {
       <button id="validate-button" type="submit">Valider</button>
     </div>
   </form>
-</div>`,
+</div>
+`,
   openModal() {
-    document.querySelector("dialog").innerHTML = this.html; 
+    document.querySelector("dialog").innerHTML = this.html;
+    document.querySelector(".overlay").style.display= "block";  
   },
   async closeModal() {
     document.querySelector("dialog").close();
-    works = await fetchWorks(); 
-    displayWorksHtml(works);   
+    displayWorksHtml(JSON.parse(window.localStorage.getItem("works"))); 
+    document.querySelector(".overlay").style.display= "none";
   },
   addEventListenersToHtmlElements() {
     const modal = document.querySelector("dialog");
-    // 1.add event listener to the close button
+    // 1.Add event listener to the close button
     let closeButton = document.querySelector(".close-button");
     closeButton.addEventListener("click", () => {
       this.closeModal();
     })
-    //2.add event listener to the back button 
+    //2.Add event listener to the back button 
     document.querySelector(".fa-arrow-left").addEventListener("click", () => {
       this.closeModal();
       editOrRemoveWorkModal.init();
     })
 
-    //3.add event listener to the upload file button 
+    //3.Add event listener to the upload file button 
     const uploadButton = document.querySelector("#load-picture");
     uploadButton.addEventListener('change', () => {
       const imgLogo = document.querySelector(".fa-image");
@@ -189,31 +193,31 @@ const addWorkModal = {
 
       let reader = new FileReader();
       reader.readAsDataURL(uploadButton.files[0])
-      //adding the img to the html
+      //a) adding the img to the html
       reader.onload = () => {
         let loadPicture = document.querySelector("#edit-mode-picture");
         loadPicture.innerHTML = `<img src=${reader.result} alt=${uploadButton.files[0].name}>`
-      //modifying the dropZone Html
+      //b) modifying the dropZone Html
         loadPicture.style.display = "block";
         imgLogo.style.display = "none";
         imgSpec.style.display = "none";
-      //changing upload button css
+      //c) changing upload button css
         uploadButtonLabel.style.padding = "3px";
         uploadButtonLabel.style.width = "80px";
         uploadButtonLabel.style.fontSize = "0.6rem";
         uploadButtonLabel.innerText = "Changer photo";
-        //changing the validate button css
+        //d) changing the validate button css
         const validateButton = document.getElementById("validate-button"); 
         validateButton.style.backgroundColor = "rgb(29, 97, 84)"; 
       }
     })
 
-    //4.add event listener to the form
+    //4.Add event listener to the form
     const form = document.getElementById("addWorkForm");
     form.addEventListener("submit", async (event) => {
       event.preventDefault();
 
-      //adding the loading animation to the submit button 
+    //5.Adding the loading animation to the submit button 
       const sendButton = document.getElementById("validate-button");
       const loadingAnimHtml = ` <div class="loading-pt-wrapper">
       <div class="loading-pt pt-1"></div>
@@ -222,11 +226,11 @@ const addWorkModal = {
     </div>`;
     sendButton.innerHTML = loadingAnimHtml; 
     
-    //disable all click event on the modal 
+    //6.Disable all click event on the modal 
       const modal = document.querySelector("dialog"); 
       modal.style.pointerEvents = "none";
 
-    // create the work object
+    //7.Create the work object
       const title = document.getElementById("title").value;
       const category = document.getElementById("categories").value; 
       const img = document.getElementById("load-picture").files[0];
@@ -236,7 +240,7 @@ const addWorkModal = {
       newWork.append("title", title);
       newWork.append("category", category);
 
-      //send the work to the server
+      //8.Send the work to the server
       const httpRequestResponse = await this.sendWork(newWork); 
       
       if(httpRequestResponse){
@@ -249,6 +253,11 @@ const addWorkModal = {
       }else{
         console.log("an unexpected error occured"); 
       } 
+    })
+    // 9.add event listener on the overlay
+    document.querySelector(".overlay").addEventListener("click", ()=>{
+      //this.closeModal(); 
+      console.log("click"); 
     })
   },
   async sendWork(newWork) {
@@ -266,7 +275,8 @@ const addWorkModal = {
         body: newWork
       })
       if(response.ok){ 
-        works = await fetchWorks();
+        let works = await fetchWorks();
+        window.localStorage.setItem("works", JSON.stringify(works)); 
         return true; 
       }
   
