@@ -38,7 +38,7 @@ await displayCategories();
     displayWorksHtml(works); 
  })
 
- // remove the token after a certain time
+ // remove the tokens after a certain time
  function removeToken(time){
    setTimeout(function() {
        localStorage.removeItem("token");

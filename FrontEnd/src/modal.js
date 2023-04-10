@@ -56,8 +56,7 @@ const editOrRemoveWorkModal = {
 
     //5.add event listener on the overlay
     document.querySelector(".overlay").addEventListener("click", ()=>{
-      //this.closeModal();
-      console.log("click");  
+      //this.closeModal();  
     })
 
   },
@@ -107,7 +106,7 @@ const editOrRemoveWorkModal = {
   async removeWork(id) {
     let token = window.localStorage.getItem("token");
     if(token === null){
-      window.location.href = "http://localhost:5500/login.html"; 
+      window.location.href = "/login.html"; 
       return; 
     }
     try {
@@ -257,13 +256,12 @@ const addWorkModal = {
     // 9.add event listener on the overlay
     document.querySelector(".overlay").addEventListener("click", ()=>{
       //this.closeModal(); 
-      console.log("click"); 
     })
   },
   async sendWork(newWork) {
     let token = window.localStorage.getItem("token");
     if(token === null){
-      window.location.href = "http://localhost:5500/login.html"
+      window.location.href = "/login.html"; 
       return; 
     }
    try {
@@ -308,7 +306,8 @@ const addWorkModal = {
     title.value = work.title;
     //adding the work's category
     let categoriesForm = document.querySelector("#categories");
-    for (let i = 0; i < categoriesForm.options.length; i++) {
+    for (let i = 0; i < categoriesForm.options
+      .length; i++) {
       let option = categoriesForm.options[i];
       if (option.getAttribute("id") === work.categoryId) {
         categoriesForm.selectedIndex = i;
@@ -355,7 +354,7 @@ function displayEditButton() {
     projectsSection.appendChild(projectsdEditButton);
     projectsdEditButton.addEventListener("click", () => {
       //check if the user is logged in 
-      if(window.localStorage.getItem("token") === null) window.location.href = "http://localhost:5500/index.html"
+      if(window.localStorage.getItem("token") === null) window.location.href = "/index.html"
       editOrRemoveWorkModal.init();
     })
   }
