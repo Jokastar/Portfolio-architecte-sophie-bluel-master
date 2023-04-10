@@ -107,7 +107,7 @@ const editOrRemoveWorkModal = {
   async removeWork(id) {
     let token = window.localStorage.getItem("token");
     if(token === null){
-      window.location.href = "http://localhost:5500/login.html"; 
+      window.location.href = "/login.html"; 
       return; 
     }
     try {
@@ -263,7 +263,7 @@ const addWorkModal = {
   async sendWork(newWork) {
     let token = window.localStorage.getItem("token");
     if(token === null){
-      window.location.href = "http://localhost:5500/login.html"
+      window.location.href = "/login.html"
       return; 
     }
    try {
@@ -355,7 +355,7 @@ function displayEditButton() {
     projectsSection.appendChild(projectsdEditButton);
     projectsdEditButton.addEventListener("click", () => {
       //check if the user is logged in 
-      if(window.localStorage.getItem("token") === null) window.location.href = "http://localhost:5500/index.html"
+      if(window.localStorage.getItem("token") === null) window.location.href = "/index.html"
       editOrRemoveWorkModal.init();
     })
   }

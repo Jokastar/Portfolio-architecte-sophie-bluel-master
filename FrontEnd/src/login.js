@@ -22,7 +22,7 @@ form.addEventListener("submit", async (event)=>{
             const time = 5600; 
             //put the token to the localeStorage and redirect to the main page 
             window.localStorage.setItem("token", token.token);
-            window.location.href = "http://localhost:5500/";
+            window.location.href = "/index.html";
         }else{
            showErrorMessage(response); 
         }
@@ -61,7 +61,7 @@ export function CheckUserLoggedIn(){
     window.localStorage.removeItem("token"); 
    }
     const login = () =>{
-    window.location.href = "http://localhost:5500/login.html"; 
+    window.location.href = "/login.html"; 
    }
  
     if(token != null){
